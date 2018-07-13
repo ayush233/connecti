@@ -1,0 +1,78 @@
+<main id="post-home">
+	<div>
+		Group Links
+	</div>
+
+	<div class="deewar-posts">
+		<% if user_signed_in? %>
+			<div class="new-post-form">
+				<%= form_for @post do |f|%>
+					<%= f.text_area:content %>
+					<br>
+					<%= f.submit %>
+				<%end%>	
+			</div>
+		<%end%>		
+		<div class="post-form">
+			<%i=0%>
+			<% @posts.reverse.each do |posts| %>
+				<ul>
+					<li>
+						<h3><%= posts.user.email%></h3> 
+						
+						<%= posts.content%>
+						<% if user_signed_in? %>
+							<br>
+							<br>
+							 <%= link_to posts.like_status_string(current_user.id),toggle_like_path(posts.id),method: :get %>
+							<%= posts.likes.count%>
+						<%end%>
+						<% if user_signed_in? && posts.user_id == current_user.id %>
+						| <%= link_to 'destroy',destroy_post_path(posts.id),method: :delete%>
+						<%end%>
+						<% if user_signed_in? %>
+							<%= form_for @comment do |f|%>
+								<br>
+								<%= f.text_area:content %>
+								<br>
+								<%=f.hidden_field :post_id,value: posts.id%>
+								<%if user_signed_in?%>
+								<%=f.hidden_field :user_id,value: current_user.id%>
+								<%end%>
+								<%= f.submit %>
+							<%end%>
+						<%end%>
+						<br>
+						<br>
+						<%j=0%>
+						<% posts.comments.each do |comments| %>
+							<ul id="comments">
+								<li>
+									<h4><%= comments.user.email%></h4> 
+									&nbsp
+									<%= comments.content%>
+									<% if user_signed_in? %>
+										<br>
+										<br>
+										 <%= link_to comments.like_status_string(current_user.id),toggleC_like_path(comments.id) %>
+										<%= comments.likes.count%>
+									<%end%>
+									<% if user_signed_in? && (comments.user_id == current_user.id || posts.user_id == current_user.id) %>
+										| <%= link_to 'destroy',destroy_comment_path(comments.id),method: :delete%>
+									<%end%>
+								</li>
+							</ul>
+							<%j+=1%>
+						<%end%>
+					</li> 
+				</ul>
+				<%i+=1%>
+			<%end%>	
+		</div>	
+
+	</div>
+
+	<div>
+		Friends
+	</div>
+</main>
